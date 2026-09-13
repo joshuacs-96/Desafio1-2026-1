@@ -4,4 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        main.cpp
+        bits.cpp \
+        main.cpp \
+        memoria.cpp \
+        tablero.cpp
+
+HEADERS += \
+    bits.h \
+    memoria.h \
+    tablero.h
