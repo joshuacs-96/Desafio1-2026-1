@@ -76,7 +76,7 @@ void escribirFicha(unsigned char* tablero,int indice,unsigned char valor)
         unsigned char mascara =
             static_cast<unsigned char>(0b00000111 << offset);
 
-        // Primero limpiamos los 3 bits donde irá la ficha.
+        // limpiamos los 3 bits donde irá la ficha.
         tablero[byteInicial] =
             tablero[byteInicial] &
             static_cast<unsigned char>(~mascara);

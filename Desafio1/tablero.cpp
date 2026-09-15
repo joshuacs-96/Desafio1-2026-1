@@ -1,7 +1,9 @@
 #include "bits.h"
+#include "tablero.h"
 #include <iostream>
 
 using namespace std;
+const char SIMBOLOS[6] = {'/', '*', '?', '=', '$', '%'};
 
 void generarFicha(unsigned char* tablero, int fila, int columna, int columnas) {
     int indice = calcularIndice(fila, columna, columnas);
@@ -24,7 +26,6 @@ void eliminarFicha(unsigned char* tablero, int fila, int columna, int columnas) 
     escribirFicha(tablero, indice, codigo_vacio);
 }
 
-const char SIMBOLOS[6] = {'/', '*', '?', '=', '$', '%'};
 char simboloDeFicha(unsigned char ficha) {
     if (ficha == codigo_vacio) return '.';
     if (ficha < 6) return SIMBOLOS[ficha];

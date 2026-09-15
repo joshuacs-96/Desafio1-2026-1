@@ -1,5 +1,5 @@
-#ifndef MEMORIA_H
-#define MEMORIA_H
+#ifndef TABLERO_H
+#define TABLERO_H
 
 
 void generarFicha(unsigned char* tablero, int fila, int columna, int columnas);
@@ -10,4 +10,4 @@ void mostrarTablero(const unsigned char* tablero, int filas, int columnas);
 void mostrarBinario(const unsigned char* tablero, int bytesUsados);
 
 
-#endif // MEMORIA_H
+#endif // TABLERO_H
