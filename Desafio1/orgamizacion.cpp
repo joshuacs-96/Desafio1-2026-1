@@ -42,18 +42,18 @@ int procesarCascadas(unsigned char* tablero, int filas, int columnas,
     bool huboCombinacion = true;
 
     while (huboCombinacion) {
-        bool* marcado = new bool[filas * columnas];
-        for (int i = 0; i < filas * columnas; i++) {
-            marcado[i] = false;
-        }
+        int* filasEliminar = new int[filas * columnas];
+        int* columnasEliminar = new int[filas * columnas];
+        int cantidad = 0;
 
-        bool encontroHorizontal = detectarHorizontales(tablero, filas, columnas, marcado);
-        bool encontroVertical = detectarVerticales(tablero, filas, columnas, marcado);
+        detectarHorizontales(tablero, filas, columnas, filasEliminar, columnasEliminar, &cantidad);
+        detectarVerticales(tablero, filas, columnas, filasEliminar, columnasEliminar, &cantidad);
 
-        huboCombinacion = encontroHorizontal || encontroVertical;
+        huboCombinacion = (cantidad > 0);
 
         if (huboCombinacion) {
-            int eliminadas = eliminarMarcadas(tablero, filas, columnas, marcado);
+            int eliminadas = eliminarPorCoordenadas(tablero, filasEliminar, columnasEliminar,
+                                                    cantidad, columnas);
             *fichasEliminadasTotal += eliminadas;
             (*combinacionesTotal)++;
 
@@ -63,7 +63,8 @@ int procesarCascadas(unsigned char* tablero, int filas, int columnas,
             cascadas++;
         }
 
-        delete[] marcado;
+        delete[] filasEliminar;
+        delete[] columnasEliminar;
     }
 
     return cascadas;

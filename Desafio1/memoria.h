@@ -5,7 +5,8 @@
 unsigned char* ReservarMemoria(int bytes);
 void LiberarMemoria(unsigned char*& tablero);
 void CopiarBytes(unsigned char* destino, const unsigned char* origen, int cantidad);
-unsigned char* RedimensionarMemoria(unsigned char* actual, int bytesActuales, int bytesNuevos);
+unsigned char* RedimensionarMemoria(int bytesReservadosActual, int bytesNecesariosNuevo,bool esReduccion, int* bytesReservadosResultado, bool* seNecesitaReemplazarBloque);
+
 
 
 #endif // MEMORIA_H

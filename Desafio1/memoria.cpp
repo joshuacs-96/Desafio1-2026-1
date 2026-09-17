@@ -20,17 +20,26 @@ void CopiarBytes(unsigned char* destino, const unsigned char* origen, int cantid
     }
 }
 
-unsigned char* RedimensionarMemoria(unsigned char* actual, int bytesActuales, int bytesNuevos) {
+unsigned char* RedimensionarMemoria(int bytesReservadosActual, int bytesNecesariosNuevo,
+                                    bool esReduccion, int* bytesReservadosResultado,
+                                    bool* seNecesitaReemplazarBloque) {
 
-    unsigned char* nuevo = ReservarMemoria(bytesNuevos);
-    int aCopiar = bytesActuales;
-
-    if (bytesNuevos < bytesActuales) {
-        aCopiar = bytesNuevos;
+    if (!esReduccion) {
+        *bytesReservadosResultado = bytesNecesariosNuevo;
+        *seNecesitaReemplazarBloque = true;
+        return ReservarMemoria(bytesNecesariosNuevo);
     }
 
-    CopiarBytes(nuevo, actual, aCopiar);
-    LiberarMemoria(actual);
+    // Al eliminar, aplicamos la regla del 65%
+    double porcentajeUso = (double)bytesNecesariosNuevo / (double)bytesReservadosActual;
 
-    return nuevo;
+    if (porcentajeUso < 0.65) {
+        *bytesReservadosResultado = bytesNecesariosNuevo;
+        *seNecesitaReemplazarBloque = true;
+        return ReservarMemoria(bytesNecesariosNuevo);
+    } else {
+        *bytesReservadosResultado = bytesReservadosActual;
+        *seNecesitaReemplazarBloque = false;
+        return ReservarMemoria(bytesReservadosActual); // buffer temporal, mismo tamaño
+    }
 }

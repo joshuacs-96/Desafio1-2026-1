@@ -1,174 +1,94 @@
 #include "combinaciones.h"
 #include "bits.h"
 
-bool detectarHorizontales(
-    const unsigned char* tablero,
-    int filas,
-    int columnas,
-    bool* marcado
-    )
-{
-    bool encontrado = false;
 
-    for (int fila = 0; fila < filas; fila++)
-    {
-        int columna = 0;
+bool yaEstaEnLista(int fila, int columna, int* filasEliminar, int* columnasEliminar, int cantidad) {
+    for (int i = 0; i < cantidad; i++) {
+        if (filasEliminar[i] == fila && columnasEliminar[i] == columna) {
+            return true;
+        }
+    }
+    return false;
+}
 
-        while (columna < columnas)
-        {
-            int indiceInicial =
-                calcularIndice(fila, columna, columnas);
+void detectarHorizontales(unsigned char* tablero, int filas, int columnas,
+                          int* filasEliminar, int* columnasEliminar, int* cantidad) {
+    for (int f = 0; f < filas; f++) {
+        int c = 0;
+        while (c < columnas) {
+            unsigned char fichaActual = obtenerFicha(tablero, calcularIndice(f, c, columnas));
 
-            unsigned char ficha =
-                obtenerFicha(tablero, indiceInicial);
-
-            // Una posición vacía no puede formar combinación.
-            if (ficha == codigo_vacio)
-            {
-                columna++;
+            if (fichaActual == codigo_vacio) {
+                c++;
                 continue;
             }
 
-            int inicio = columna;
-            int cantidad = 1;
+            int inicio = c;
+            int largo = 1;
 
-            columna++;
-
-            // Contamos cuántas fichas iguales
-            // aparecen consecutivamente.
-            while (columna < columnas)
-            {
-                int indice =
-                    calcularIndice(fila, columna, columnas);
-
-                unsigned char siguiente =
-                    obtenerFicha(tablero, indice);
-
-                if (siguiente != ficha)
-                {
-                    break;
-                }
-
-                cantidad++;
-                columna++;
+            while (c + 1 < columnas &&
+                   obtenerFicha(tablero, calcularIndice(f, c + 1, columnas)) == fichaActual) {
+                largo++;
+                c++;
             }
 
-            // Tres o más forman una combinación.
-            if (cantidad >= 3)
-            {
-                encontrado = true;
-
-                for (int c = inicio;
-                     c < inicio + cantidad;
-                     c++)
-                {
-                    int indice =
-                        calcularIndice(fila, c, columnas);
-
-                    marcado[indice] = true;
+            if (largo >= 3) {
+                for (int k = inicio; k <= c; k++) {
+                    if (!yaEstaEnLista(f, k, filasEliminar, columnasEliminar, *cantidad)) {
+                        filasEliminar[*cantidad] = f;
+                        columnasEliminar[*cantidad] = k;
+                        (*cantidad)++;
+                    }
                 }
             }
+
+            c++;
         }
     }
-
-    return encontrado;
 }
 
-bool detectarVerticales(
-    const unsigned char* tablero,
-    int filas,
-    int columnas,
-    bool* marcado
-    )
-{
-    bool encontrado = false;
+void detectarVerticales(unsigned char* tablero, int filas, int columnas,
+                        int* filasEliminar, int* columnasEliminar, int* cantidad) {
+    for (int c = 0; c < columnas; c++) {
+        int f = 0;
+        while (f < filas) {
+            unsigned char fichaActual = obtenerFicha(tablero, calcularIndice(f, c, columnas));
 
-    for (int columna = 0;
-         columna < columnas;
-         columna++)
-    {
-        int fila = 0;
-
-        while (fila < filas)
-        {
-            int indiceInicial =
-                calcularIndice(fila, columna, columnas);
-
-            unsigned char ficha =
-                obtenerFicha(tablero, indiceInicial);
-
-            if (ficha == codigo_vacio)
-            {
-                fila++;
+            if (fichaActual == codigo_vacio) {
+                f++;
                 continue;
             }
 
-            int inicio = fila;
-            int cantidad = 1;
+            int inicio = f;
+            int largo = 1;
 
-            fila++;
-
-            while (fila < filas)
-            {
-                int indice =
-                    calcularIndice(fila, columna, columnas);
-
-                unsigned char siguiente =
-                    obtenerFicha(tablero, indice);
-
-                if (siguiente != ficha)
-                {
-                    break;
-                }
-
-                cantidad++;
-                fila++;
+            while (f + 1 < filas &&
+                   obtenerFicha(tablero, calcularIndice(f + 1, c, columnas)) == fichaActual) {
+                largo++;
+                f++;
             }
 
-            if (cantidad >= 3)
-            {
-                encontrado = true;
-
-                for (int f = inicio;
-                     f < inicio + cantidad;
-                     f++)
-                {
-                    int indice =
-                        calcularIndice(f, columna, columnas);
-
-                    marcado[indice] = true;
+            if (largo >= 3) {
+                for (int k = inicio; k <= f; k++) {
+                    // ACA esta el paso clave: verificar contra lo que ya dejo la horizontal
+                    if (!yaEstaEnLista(k, c, filasEliminar, columnasEliminar, *cantidad)) {
+                        filasEliminar[*cantidad] = k;
+                        columnasEliminar[*cantidad] = c;
+                        (*cantidad)++;
+                    }
                 }
             }
+
+            f++;
         }
     }
-
-    return encontrado;
 }
 
-int eliminarMarcadas(
-    unsigned char* tablero,
-    int filas,
-    int columnas,
-    const bool* marcado
-    )
-{
-    int eliminadas = 0;
-
-    int total = filas * columnas;
-
-    for (int indice = 0; indice < total; indice++)
-    {
-        if (marcado[indice])
-        {
-            escribirFicha(
-                tablero,
-                indice,
-                codigo_vacio
-                );
-
-            eliminadas++;
-        }
+int eliminarPorCoordenadas(unsigned char* tablero, int* filasEliminar, int* columnasEliminar,
+                           int cantidad, int columnas) {
+    for (int i = 0; i < cantidad; i++) {
+        int indice = calcularIndice(filasEliminar[i], columnasEliminar[i], columnas);
+        escribirFicha(tablero, indice, codigo_vacio);
     }
-
-    return eliminadas;
+    return cantidad; // cuantas fichas se eliminaron en total
 }
