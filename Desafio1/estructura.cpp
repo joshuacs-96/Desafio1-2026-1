@@ -282,6 +282,9 @@ unsigned char* agregarColumna(unsigned char* tablero, int filas, int columnas,
     bool reemplazarBloque;
     unsigned char* destino = RedimensionarMemoria(bytesReservadosActual, bytesNecesariosNuevo,
                                                   false, bytesReservadosNuevo, &reemplazarBloque);
+    if (destino == nullptr) {
+        return nullptr;
+    }
     // Reconstruccion
     int indiceDestino = 0;
     for (int f = 0; f < filas; f++) {
@@ -311,6 +314,9 @@ unsigned char* eliminarColumna(unsigned char* tablero, int filas, int columnas,
     bool reemplazarBloque;
     unsigned char* destino = RedimensionarMemoria(bytesReservadosActual, bytesNecesariosNuevo,
                                                   true, bytesReservadosNuevo, &reemplazarBloque);
+    if (destino == nullptr) {
+        return nullptr;
+    }
     // Reconstruccion
     int indiceDestino = 0;
     for (int f = 0; f < filas; f++) {

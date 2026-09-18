@@ -1,5 +1,6 @@
 #include "interfaz.h"
 #include "tablero.h"
+#include "organizacion.h"
 #include <iostream>
 using namespace std;
 
@@ -32,15 +33,13 @@ int mostrarMenu() {
     cout << "4. Agregar columna" << endl;
     cout << "5. Eliminar columna" << endl;
     cout << "6. Ver tablero en binario" << endl;
-    cout << "7. Ver estadisticas" << endl;
-    cout << "8. Salir" << endl;
+    cout << "7. Salir" << endl;
     cout << "Seleccione una opcion: ";
 
-    cin >> opcion;
-
-    while (opcion < 1 || opcion > 8) {
+    while (!(cin >> opcion) || opcion < 1 || opcion > 7) {
         cout << "Opcion invalida. Intente de nuevo: ";
-        cin >> opcion;
+        cin.clear();
+        cin.ignore(10000, '\n');
     }
 
     return opcion;
@@ -63,4 +62,52 @@ void leerMovimiento(int* fila, int* columna, int filas, int columnas) {
 
     *fila = f;
     *columna = c;
+}
+
+int calcularPuntuacion(int fichasEliminadasEnEstaCascada) {
+    return fichasEliminadasEnEstaCascada;
+}
+
+void mostrarEstado(const unsigned char* tablero, int filas, int columnas)
+{
+    cout << "\n===== TABLERO =====" << endl;
+    mostrarTablero(tablero, filas, columnas);
+}
+
+void mostrarEstadisticas(int filas, int columnas, int bytesReservados,
+                         int eliminacionesUsuario, int fichasEliminadasTotal,
+                         int combinacionesTotal, int cascadasActuales,
+                         int puntuacion)
+{
+    cout << "\n===== ESTADISTICAS =====" << endl;
+    cout << "Dimensiones: " << filas << " x " << columnas << endl;
+    cout << "Bytes reservados: " << bytesReservados << endl;
+    cout << "Eliminaciones del usuario: " << eliminacionesUsuario << endl;
+    cout << "Fichas eliminadas: " << fichasEliminadasTotal << endl;
+    cout << "Combinaciones detectadas: " << combinacionesTotal << endl;
+    cout << "Cascadas de la ultima operacion: " << cascadasActuales << endl;
+    cout << "Puntuacion: " << puntuacion << endl;
+}
+
+void procesarEliminacionUsuario(unsigned char* tablero, int filas, int columnas,
+                                int fila, int columna, int* eliminacionesUsuario,
+                                int* fichasEliminadasTotal, int* combinacionesTotal,
+                                int* cascadasActuales, int* puntuacion) {
+
+    int fichasAntes = *fichasEliminadasTotal;
+
+    eliminarFicha(tablero, fila, columna, columnas);
+    (*eliminacionesUsuario)++;
+    (*fichasEliminadasTotal)++;
+
+    // Una ficha eliminada deja un espacio: primero se reorganiza el tablero
+    // y se completan los vacíos antes de buscar combinaciones automáticas.
+    aplicarGravedad(tablero, filas, columnas);
+    rellenarVacios(tablero, filas, columnas);
+
+    *cascadasActuales = procesarCascadas(tablero, filas, columnas,
+                                         fichasEliminadasTotal, combinacionesTotal);
+
+    int fichasEnEstaJugada = *fichasEliminadasTotal - fichasAntes;
+    *puntuacion += calcularPuntuacion(fichasEnEstaJugada);
 }
