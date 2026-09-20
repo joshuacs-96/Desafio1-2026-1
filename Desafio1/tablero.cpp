@@ -58,16 +58,17 @@ void mostrarTablero(const unsigned char* tablero, int filas, int columnas) {
     }
 }
 
-void mostrarBinario(const unsigned char* tablero, int bytesUsados) {
-    for (int i = 0; i < bytesUsados; i++) {
-        cout << "Byte " << i << ": ";
-        for (int bit = 7; bit >= 0; bit--) {
-            unsigned char mascara = 1 << bit;
-            if (tablero[i] & mascara) {
-                cout << "1";
-            } else {
-                cout << "0";
+void mostrarBinario(const unsigned char* tablero, int filas, int columnas) {
+    cout << "\n===== TABLERO EN BITS =====" << endl;
+    for (int f = 0; f < filas; f++) {
+        for (int c = 0; c < columnas; c++) {
+            int indice = calcularIndice(f, c, columnas);
+            unsigned char ficha = obtenerFicha(tablero, indice);
+
+            for (int bit = 2; bit >= 0; bit--) {
+                cout << ((ficha >> bit) & 1);
             }
+            cout << " ";
         }
         cout << endl;
     }

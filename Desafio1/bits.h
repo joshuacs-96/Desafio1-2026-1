@@ -14,7 +14,7 @@ const unsigned char codigo_vacio = 0b110; // ficha 6
 int calcularIndice(int fila, int columna, int columnas);
 int calcularBitInicial(int indice);
 int calcularByte(int bitInicial);
-int calcularOffset(int bitInical);
+int calcularOffset(int bitInicial);
 int bytesNecesarios(int filas, int columnas);
 unsigned char obtenerFicha(const unsigned char* tablero, int indice);
 void escribirFicha(unsigned char* tablero, int indice, unsigned char valor);

@@ -4,22 +4,52 @@
 #include <iostream>
 using namespace std;
 
+int leerEnteroMinimo(const char* mensaje, int minimo)
+{
+    int valor;
+
+    while (true) {
+        cout << mensaje << " (minimo " << minimo << "): ";
+
+        if (cin >> valor) {
+            cin.ignore(10000, '\n');
+            if (valor >= minimo) {
+                return valor;
+            }
+        } else {
+            cin.clear();
+            cin.ignore(10000, '\n');
+        }
+
+        cout << "Entrada invalida. Intente de nuevo." << endl;
+    }
+}
+
+int leerEnteroEnRango(const char* mensaje, int minimo, int maximo)
+{
+    int valor;
+
+    while (true) {
+        cout << mensaje << " (" << minimo << " a " << maximo << "): ";
+
+        if (cin >> valor) {
+            cin.ignore(10000, '\n');
+            if (valor >= minimo && valor <= maximo) {
+                return valor;
+            }
+        } else {
+            cin.clear();
+            cin.ignore(10000, '\n');
+        }
+
+        cout << "Entrada invalida. Intente de nuevo." << endl;
+    }
+}
+
 
 void pedirDimensiones(int* filas, int* columnas) {
-    int f, c;
-
-    do {
-        cout << "Ingrese el numero de filas (minimo 3): ";
-        cin >> f;
-    } while (f < 3);
-
-    do {
-        cout << "Ingrese el numero de columnas (minimo 3): ";
-        cin >> c;
-    } while (c < 3);
-
-    *filas = f;
-    *columnas = c;
+    *filas = leerEnteroMinimo("Ingrese el numero de filas", 3);
+    *columnas = leerEnteroMinimo("Ingrese el numero de columnas", 3);
 }
 
 int mostrarMenu() {
@@ -34,34 +64,14 @@ int mostrarMenu() {
     cout << "5. Eliminar columna" << endl;
     cout << "6. Ver tablero en binario" << endl;
     cout << "7. Salir" << endl;
-    cout << "Seleccione una opcion: ";
-
-    while (!(cin >> opcion) || opcion < 1 || opcion > 7) {
-        cout << "Opcion invalida. Intente de nuevo: ";
-        cin.clear();
-        cin.ignore(10000, '\n');
-    }
+    opcion = leerEnteroEnRango("Seleccione una opcion", 1, 7);
 
     return opcion;
 }
 
 void leerMovimiento(int* fila, int* columna, int filas, int columnas) {
-    int f, c;
-
-    do {
-        cout << "Ingrese la fila de la ficha a eliminar (0 a " << (filas - 1) << "): ";
-        cin >> f;
-        cout << "Ingrese la columna de la ficha a eliminar (0 a " << (columnas - 1) << "): ";
-        cin >> c;
-
-        if (!posicionValida(f, c, filas, columnas)) {
-            cout << "Posicion invalida, intente de nuevo." << std::endl;
-        }
-
-    } while (!posicionValida(f, c, filas, columnas));
-
-    *fila = f;
-    *columna = c;
+    *fila = leerEnteroEnRango("Ingrese la fila de la ficha a eliminar", 0, filas - 1);
+    *columna = leerEnteroEnRango("Ingrese la columna de la ficha a eliminar", 0, columnas - 1);
 }
 
 int calcularPuntuacion(int fichasEliminadasEnEstaCascada) {
@@ -76,7 +86,7 @@ void mostrarEstado(const unsigned char* tablero, int filas, int columnas)
 
 void mostrarEstadisticas(int filas, int columnas, int bytesReservados,
                          int eliminacionesUsuario, int fichasEliminadasTotal,
-                         int combinacionesTotal, int cascadasActuales,
+                         int combinacionesTotal, int cascadasActuales, int cascadasTotales,
                          int puntuacion)
 {
     cout << "\n===== ESTADISTICAS =====" << endl;
@@ -86,6 +96,7 @@ void mostrarEstadisticas(int filas, int columnas, int bytesReservados,
     cout << "Fichas eliminadas: " << fichasEliminadasTotal << endl;
     cout << "Combinaciones detectadas: " << combinacionesTotal << endl;
     cout << "Cascadas de la ultima operacion: " << cascadasActuales << endl;
+    cout << "Cascadas acumuladas: " << cascadasTotales << endl;
     cout << "Puntuacion: " << puntuacion << endl;
 }
 

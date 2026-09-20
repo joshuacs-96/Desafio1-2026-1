@@ -37,6 +37,7 @@ int main()
     int cascadasActuales = procesarCascadas(tablero, filas, columnas,
                                             &fichasEliminadasTotal,
                                             &combinacionesTotal);
+    int cascadasTotales = cascadasActuales;
     int puntuacion = fichasEliminadasTotal;
 
     int opcion;
@@ -44,7 +45,7 @@ int main()
         mostrarEstado(tablero, filas, columnas);
         mostrarEstadisticas(filas, columnas, bytesReservados,
                             eliminacionesUsuario, fichasEliminadasTotal,
-                            combinacionesTotal, cascadasActuales,
+                            combinacionesTotal, cascadasActuales, cascadasTotales,
                             puntuacion);
         opcion = mostrarMenu();
         cascadasActuales = 0;
@@ -58,64 +59,61 @@ int main()
                                       &fichasEliminadasTotal,
                                       &combinacionesTotal,
                                       &cascadasActuales, &puntuacion);
+            cascadasTotales += cascadasActuales;
         }
         else if (opcion == 2) {
-            int posicion;
-            cout << "Posicion para insertar la fila (0 a " << filas << "): ";
-            cin >> posicion;
-            if (posicion >= 0 && posicion <= filas) {
-                tablero = agregarFila(tablero, &filas, columnas, posicion,
-                                      &bytesReservados);
-                cascadasActuales = procesarCascadas(tablero, filas, columnas,
-                                                    &fichasEliminadasTotal,
-                                                    &combinacionesTotal);
-                puntuacion = fichasEliminadasTotal;
-            } else {
-                cout << "Posicion invalida." << endl;
-            }
+            int posicion = leerEnteroEnRango(
+                "Posicion para insertar la fila", 0, filas);
+            int fichasAntes = fichasEliminadasTotal;
+            tablero = agregarFila(tablero, &filas, columnas, posicion,
+                                  &bytesReservados);
+            cascadasActuales = procesarCascadas(tablero, filas, columnas,
+                                                &fichasEliminadasTotal,
+                                                &combinacionesTotal);
+            cascadasTotales += cascadasActuales;
+            puntuacion += calcularPuntuacion(
+                fichasEliminadasTotal - fichasAntes);
         }
         else if (opcion == 3) {
-            int posicion;
-            cout << "Fila a eliminar (0 a " << (filas - 1) << "): ";
-            cin >> posicion;
-            if (posicion >= 0 && posicion < filas && filas > 1) {
+            if (filas > 3) {
+                int posicion = leerEnteroEnRango("Fila a eliminar", 0, filas - 1);
+                int fichasAntes = fichasEliminadasTotal;
                 tablero = eliminarFila(tablero, &filas, columnas, posicion,
                                        &bytesReservados);
                 cascadasActuales = procesarCascadas(tablero, filas, columnas,
                                                     &fichasEliminadasTotal,
                                                     &combinacionesTotal);
-                puntuacion = fichasEliminadasTotal;
+                cascadasTotales += cascadasActuales;
+                puntuacion += calcularPuntuacion(
+                    fichasEliminadasTotal - fichasAntes);
             } else {
-                cout << "No se puede eliminar esa fila." << endl;
+                cout << "El tablero debe conservar al menos 3 filas." << endl;
             }
         }
         else if (opcion == 4) {
-            int posicion;
-            cout << "Posicion para insertar la columna (0 a " << columnas << "): ";
-            cin >> posicion;
-            if (posicion >= 0 && posicion <= columnas) {
-                unsigned char* tableroNuevo = agregarColumna(
-                    tablero, filas, columnas, posicion, bytesReservados,
-                    &bytesReservados);
-                if (tableroNuevo != nullptr) {
-                    tablero = tableroNuevo;
-                    columnas++;
-                    cascadasActuales = procesarCascadas(tablero, filas, columnas,
-                                                        &fichasEliminadasTotal,
-                                                        &combinacionesTotal);
-                    puntuacion = fichasEliminadasTotal;
-                } else {
-                    cout << "No fue posible ampliar el tablero." << endl;
-                }
+            int posicion = leerEnteroEnRango(
+                "Posicion para insertar la columna", 0, columnas);
+            int fichasAntes = fichasEliminadasTotal;
+            unsigned char* tableroNuevo = agregarColumna(
+                tablero, filas, columnas, posicion, bytesReservados,
+                &bytesReservados);
+            if (tableroNuevo != nullptr) {
+                tablero = tableroNuevo;
+                columnas++;
+                cascadasActuales = procesarCascadas(tablero, filas, columnas,
+                                                    &fichasEliminadasTotal,
+                                                    &combinacionesTotal);
+                cascadasTotales += cascadasActuales;
+                puntuacion += calcularPuntuacion(
+                    fichasEliminadasTotal - fichasAntes);
             } else {
-                cout << "Posicion invalida." << endl;
+                cout << "No fue posible ampliar el tablero." << endl;
             }
         }
         else if (opcion == 5) {
-            int posicion;
-            cout << "Columna a eliminar (0 a " << (columnas - 1) << "): ";
-            cin >> posicion;
-            if (posicion >= 0 && posicion < columnas && columnas > 1) {
+            if (columnas > 3) {
+                int posicion = leerEnteroEnRango("Columna a eliminar", 0, columnas - 1);
+                int fichasAntes = fichasEliminadasTotal;
                 unsigned char* tableroNuevo = eliminarColumna(
                     tablero, filas, columnas, posicion, bytesReservados,
                     &bytesReservados);
@@ -125,16 +123,18 @@ int main()
                     cascadasActuales = procesarCascadas(tablero, filas, columnas,
                                                         &fichasEliminadasTotal,
                                                         &combinacionesTotal);
-                    puntuacion = fichasEliminadasTotal;
+                    cascadasTotales += cascadasActuales;
+                    puntuacion += calcularPuntuacion(
+                        fichasEliminadasTotal - fichasAntes);
                 } else {
                     cout << "No fue posible reducir el tablero." << endl;
                 }
             } else {
-                cout << "No se puede eliminar esa columna." << endl;
+                cout << "El tablero debe conservar al menos 3 columnas." << endl;
             }
         }
         else if (opcion == 6) {
-            mostrarBinario(tablero, bytesReservados);
+            mostrarBinario(tablero, filas, columnas);
         }
     } while (opcion != 7);
 

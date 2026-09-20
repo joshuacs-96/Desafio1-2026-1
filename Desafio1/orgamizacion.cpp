@@ -2,6 +2,7 @@
 #include "organizacion.h"
 #include "combinaciones.h"
 #include "tablero.h"
+#include <new>
 
 void aplicarGravedad(unsigned char* tablero, int filas, int columnas) {
     for (int c = 0; c < columnas; c++) {
@@ -42,20 +43,30 @@ int procesarCascadas(unsigned char* tablero, int filas, int columnas,
     bool huboCombinacion = true;
 
     while (huboCombinacion) {
-        int* filasEliminar = new int[filas * columnas];
-        int* columnasEliminar = new int[filas * columnas];
-        int cantidad = 0;
+        int totalFichas = filas * columnas;
+        bool* marcarEliminar = new (std::nothrow) bool[totalFichas];
 
-        detectarHorizontales(tablero, filas, columnas, filasEliminar, columnasEliminar, &cantidad);
-        detectarVerticales(tablero, filas, columnas, filasEliminar, columnasEliminar, &cantidad);
+        if (marcarEliminar == nullptr) {
+            return cascadas;
+        }
 
-        huboCombinacion = (cantidad > 0);
+        for (int indice = 0; indice < totalFichas; indice++) {
+            marcarEliminar[indice] = false;
+        }
+
+        int combinacionesEnRonda = 0;
+
+        detectarHorizontales(tablero, filas, columnas, marcarEliminar,
+                             &combinacionesEnRonda);
+        detectarVerticales(tablero, filas, columnas, marcarEliminar,
+                           &combinacionesEnRonda);
+
+        huboCombinacion = (combinacionesEnRonda > 0);
 
         if (huboCombinacion) {
-            int eliminadas = eliminarPorCoordenadas(tablero, filasEliminar, columnasEliminar,
-                                                    cantidad, columnas);
+            int eliminadas = eliminarMarcadas(tablero, marcarEliminar, totalFichas);
             *fichasEliminadasTotal += eliminadas;
-            (*combinacionesTotal)++;
+            *combinacionesTotal += combinacionesEnRonda;
 
             aplicarGravedad(tablero, filas, columnas);
             rellenarVacios(tablero, filas, columnas);
@@ -63,8 +74,7 @@ int procesarCascadas(unsigned char* tablero, int filas, int columnas,
             cascadas++;
         }
 
-        delete[] filasEliminar;
-        delete[] columnasEliminar;
+        delete[] marcarEliminar;
     }
 
     return cascadas;

@@ -1,8 +1,12 @@
 #include "memoria.h"
+#include <new>
 
 
 unsigned char* ReservarMemoria(int bytes){
-    unsigned char* bloque = new unsigned char[bytes];
+    unsigned char* bloque = new (std::nothrow) unsigned char[bytes];
+    if (bloque == nullptr) {
+        return nullptr;
+    }
     for (int i = 0; i < bytes; i++) {
         bloque[i] = 0;
     }

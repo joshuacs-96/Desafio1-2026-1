@@ -3,11 +3,6 @@
 #include "memoria.h"
 #include "tablero.h"
 
-#include "estructura.h"
-#include "bits.h"
-#include "memoria.h"
-#include "tablero.h"
-
 unsigned char* agregarFila(
     unsigned char* tablero,
     int* filas,
@@ -265,14 +260,25 @@ unsigned char* eliminarFila(
         }
     }
 
-    // 6. Liberar el bloque anterior.
-    LiberarMemoria(tablero);
+    // 6. Si el uso bajó del 65 %, se reemplaza el bloque por uno menor.
+    // En caso contrario, se conserva el bloque físico original y solo se
+    // copia allí el tablero reconstruido desde el temporal.
+    if (reemplazarBloque)
+    {
+        LiberarMemoria(tablero);
+        tablero = nuevo;
+    }
+    else
+    {
+        CopiarBytes(tablero, nuevo, *bytesReservados);
+        LiberarMemoria(nuevo);
+    }
 
     // 7. Actualizar las dimensiones y capacidad.
     *filas = filasNuevas;
     *bytesReservados = nuevaCapacidad;
 
-    return nuevo;
+    return tablero;
 }
 unsigned char* agregarColumna(unsigned char* tablero, int filas, int columnas,
                               int columnaNueva, int bytesReservadosActual, int* bytesReservadosNuevo) {
