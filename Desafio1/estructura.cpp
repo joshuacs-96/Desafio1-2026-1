@@ -3,25 +3,16 @@
 #include "memoria.h"
 #include "tablero.h"
 
-unsigned char* agregarFila(
-    unsigned char* tablero,
-    int* filas,
-    int columnas,
-    int filaPos,
-    int* bytesReservados
-    )
+unsigned char* agregarFila(unsigned char* tablero,int* filas,int columnas,int filaPos,int* bytesReservados)
 {
     // 1. Validar los parámetros.
 
-    if (tablero == nullptr ||
-        filas == nullptr ||
-        bytesReservados == nullptr)
+    if (tablero == nullptr ||filas == nullptr || bytesReservados == nullptr)
     {
         return tablero;
     }
 
-    if (*filas <= 0 || columnas <= 0 ||
-        *bytesReservados <= 0)
+    if (*filas <= 0 || columnas <= 0 || *bytesReservados <= 0)
     {
         return tablero;
     }
@@ -37,8 +28,7 @@ unsigned char* agregarFila(
     int filasViejas = *filas;
     int filasNuevas = filasViejas + 1;
 
-    int bytesNuevos =
-        bytesNecesarios(filasNuevas, columnas);
+    int bytesNuevos = bytesNecesarios(filasNuevas, columnas);
 
     int nuevaCapacidad = *bytesReservados;
 
@@ -50,13 +40,7 @@ unsigned char* agregarFila(
 
     if (bytesNuevos > *bytesReservados)
     {
-        nuevo = RedimensionarMemoria(
-            *bytesReservados,
-            bytesNuevos,
-            false,
-            &nuevaCapacidad,
-            &reemplazarBloque
-            );
+        nuevo = RedimensionarMemoria(*bytesReservados,bytesNuevos,false,&nuevaCapacidad,&reemplazarBloque);
     }
     else
     {
@@ -83,21 +67,14 @@ unsigned char* agregarFila(
 
     for (int fila = 0; fila < filasNuevas; fila++)
     {
-        for (int columna = 0;
-             columna < columnas;
-             columna++)
+        for (int columna = 0;columna < columnas;columna++)
         {
             // Si es la fila insertada,
             // generamos una ficha nueva.
 
             if (fila == filaPos)
             {
-                generarFicha(
-                    nuevo,
-                    fila,
-                    columna,
-                    columnas
-                    );
+                generarFicha(nuevo,fila,columna,columnas);
             }
             else
             {
@@ -111,36 +88,18 @@ unsigned char* agregarFila(
                     filaOrigen = fila - 1;
                 }
 
-                int indiceOrigen =
-                    calcularIndice(
-                        filaOrigen,
-                        columna,
-                        columnas
-                        );
+                int indiceOrigen = calcularIndice(filaOrigen,columna,columnas);
 
-                int indiceDestino =
-                    calcularIndice(
-                        fila,
-                        columna,
-                        columnas
-                        );
+                int indiceDestino = calcularIndice(fila,columna,columnas);
 
                 // Extraemos los 3 bits del tablero viejo.
 
-                unsigned char ficha =
-                    obtenerFicha(
-                        tablero,
-                        indiceOrigen
-                        );
+                unsigned char ficha = obtenerFicha(tablero,indiceOrigen);
 
                 // Escribimos los mismos 3 bits
                 // en el tablero nuevo.
 
-                escribirFicha(
-                    nuevo,
-                    indiceDestino,
-                    ficha
-                    );
+                escribirFicha(nuevo,indiceDestino,ficha);
             }
         }
     }
@@ -158,25 +117,16 @@ unsigned char* agregarFila(
     return nuevo;
 }
 
-unsigned char* eliminarFila(
-    unsigned char* tablero,
-    int* filas,
-    int columnas,
-    int filaPos,
-    int* bytesReservados
-    )
+unsigned char* eliminarFila(unsigned char* tablero,int* filas,int columnas,int filaPos,int* bytesReservados)
 {
     // 1. Validar los parámetros.
-    if (tablero == nullptr ||
-        filas == nullptr ||
-        bytesReservados == nullptr)
+    if (tablero == nullptr ||filas == nullptr ||bytesReservados == nullptr)
     {
         return tablero;
     }
 
     // No permitir eliminar la última fila.
-    if (*filas <= 1 || columnas <= 0 ||
-        *bytesReservados <= 0)
+    if (*filas <= 1 || columnas <= 0 ||*bytesReservados <= 0)
     {
         return tablero;
     }
@@ -198,14 +148,7 @@ unsigned char* eliminarFila(
     bool reemplazarBloque = false;
 
     // 3. Solicitar memoria aplicando la regla del 65 %.
-    unsigned char* nuevo =
-        RedimensionarMemoria(
-            *bytesReservados,
-            bytesNuevos,
-            true,
-            &nuevaCapacidad,
-            &reemplazarBloque
-            );
+    unsigned char* nuevo = RedimensionarMemoria(*bytesReservados,bytesNuevos,true,&nuevaCapacidad,&reemplazarBloque);
 
     // Si falla la reserva, conservamos el tablero anterior.
     if (nuevo == nullptr)
@@ -222,9 +165,7 @@ unsigned char* eliminarFila(
     // 5. Reconstruir el tablero sin la fila eliminada.
     for (int fila = 0; fila < filasNuevas; fila++)
     {
-        for (int columna = 0;
-             columna < columnas;
-             columna++)
+        for (int columna = 0;columna < columnas;columna++)
         {
             // Las filas anteriores a la eliminada
             // conservan su posición original.
@@ -237,23 +178,12 @@ unsigned char* eliminarFila(
                 filaOrigen = fila + 1;
             }
 
-            int indiceOrigen =
-                calcularIndice(
-                    filaOrigen,
-                    columna,
-                    columnas
-                    );
+            int indiceOrigen = calcularIndice(filaOrigen,columna,columnas);
 
-            int indiceDestino =
-                calcularIndice(
-                    fila,
-                    columna,
-                    columnas
-                    );
+            int indiceDestino = calcularIndice(fila,columna,columnas);
 
             // Leer los 3 bits de la ficha original.
-            unsigned char ficha =
-                obtenerFicha(tablero, indiceOrigen);
+            unsigned char ficha = obtenerFicha(tablero, indiceOrigen);
 
             // Escribirlos en su nueva posición compacta.
             escribirFicha(nuevo, indiceDestino, ficha);
@@ -280,14 +210,12 @@ unsigned char* eliminarFila(
 
     return tablero;
 }
-unsigned char* agregarColumna(unsigned char* tablero, int filas, int columnas,
-                              int columnaNueva, int bytesReservadosActual, int* bytesReservadosNuevo) {
+unsigned char* agregarColumna(unsigned char* tablero, int filas, int columnas, int columnaNueva, int bytesReservadosActual, int* bytesReservadosNuevo) {
     int columnasNuevasTotal = columnas + 1;
     int bytesNecesariosNuevo = bytesNecesarios(filas, columnasNuevasTotal);
 
     bool reemplazarBloque;
-    unsigned char* destino = RedimensionarMemoria(bytesReservadosActual, bytesNecesariosNuevo,
-                                                  false, bytesReservadosNuevo, &reemplazarBloque);
+    unsigned char* destino = RedimensionarMemoria(bytesReservadosActual, bytesNecesariosNuevo, false, bytesReservadosNuevo, &reemplazarBloque);
     if (destino == nullptr) {
         return nullptr;
     }
@@ -312,14 +240,12 @@ unsigned char* agregarColumna(unsigned char* tablero, int filas, int columnas,
     return destino;
 }
 
-unsigned char* eliminarColumna(unsigned char* tablero, int filas, int columnas,
-                               int columnaAEliminar, int bytesReservadosActual, int* bytesReservadosNuevo) {
+unsigned char* eliminarColumna(unsigned char* tablero, int filas, int columnas,int columnaAEliminar, int bytesReservadosActual, int* bytesReservadosNuevo) {
     int columnasNuevasTotal = columnas - 1;
     int bytesNecesariosNuevo = bytesNecesarios(filas, columnasNuevasTotal);
 
     bool reemplazarBloque;
-    unsigned char* destino = RedimensionarMemoria(bytesReservadosActual, bytesNecesariosNuevo,
-                                                  true, bytesReservadosNuevo, &reemplazarBloque);
+    unsigned char* destino = RedimensionarMemoria(bytesReservadosActual, bytesNecesariosNuevo, true, bytesReservadosNuevo, &reemplazarBloque);
     if (destino == nullptr) {
         return nullptr;
     }

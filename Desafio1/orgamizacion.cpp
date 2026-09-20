@@ -37,8 +37,7 @@ void rellenarVacios(unsigned char* tablero, int filas, int columnas) {
     }
 }
 
-int procesarCascadas(unsigned char* tablero, int filas, int columnas,
-                     int* fichasEliminadasTotal, int* combinacionesTotal) {
+int procesarCascadas(unsigned char* tablero, int filas, int columnas,int* fichasEliminadasTotal, int* combinacionesTotal) {
     int cascadas = 0;
     bool huboCombinacion = true;
 
@@ -56,10 +55,9 @@ int procesarCascadas(unsigned char* tablero, int filas, int columnas,
 
         int combinacionesEnRonda = 0;
 
-        detectarHorizontales(tablero, filas, columnas, marcarEliminar,
-                             &combinacionesEnRonda);
-        detectarVerticales(tablero, filas, columnas, marcarEliminar,
-                           &combinacionesEnRonda);
+        detectarHorizontales(tablero, filas, columnas, marcarEliminar,&combinacionesEnRonda);
+
+        detectarVerticales(tablero, filas, columnas, marcarEliminar,&combinacionesEnRonda);
 
         huboCombinacion = (combinacionesEnRonda > 0);
 

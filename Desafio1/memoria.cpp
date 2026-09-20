@@ -24,10 +24,9 @@ void CopiarBytes(unsigned char* destino, const unsigned char* origen, int cantid
     }
 }
 
-unsigned char* RedimensionarMemoria(int bytesReservadosActual, int bytesNecesariosNuevo,
-                                    bool esReduccion, int* bytesReservadosResultado,
-                                    bool* seNecesitaReemplazarBloque) {
-
+unsigned char* RedimensionarMemoria(int bytesReservadosActual, int bytesNecesariosNuevo,bool esReduccion,
+                                    int* bytesReservadosResultado,bool* seNecesitaReemplazarBloque)
+{
     if (!esReduccion) {
         *bytesReservadosResultado = bytesNecesariosNuevo;
         *seNecesitaReemplazarBloque = true;

@@ -84,10 +84,8 @@ void mostrarEstado(const unsigned char* tablero, int filas, int columnas)
     mostrarTablero(tablero, filas, columnas);
 }
 
-void mostrarEstadisticas(int filas, int columnas, int bytesReservados,
-                         int eliminacionesUsuario, int fichasEliminadasTotal,
-                         int combinacionesTotal, int cascadasActuales, int cascadasTotales,
-                         int puntuacion)
+void mostrarEstadisticas(int filas, int columnas, int bytesReservados,int eliminacionesUsuario, int fichasEliminadasTotal,
+                         int combinacionesTotal, int cascadasActuales, int cascadasTotales,int puntuacion)
 {
     cout << "\n===== ESTADISTICAS =====" << endl;
     cout << "Dimensiones: " << filas << " x " << columnas << endl;
@@ -100,10 +98,8 @@ void mostrarEstadisticas(int filas, int columnas, int bytesReservados,
     cout << "Puntuacion: " << puntuacion << endl;
 }
 
-void procesarEliminacionUsuario(unsigned char* tablero, int filas, int columnas,
-                                int fila, int columna, int* eliminacionesUsuario,
-                                int* fichasEliminadasTotal, int* combinacionesTotal,
-                                int* cascadasActuales, int* puntuacion) {
+void procesarEliminacionUsuario(unsigned char* tablero, int filas, int columnas,int fila, int columna, int* eliminacionesUsuario,
+                                int* fichasEliminadasTotal, int* combinacionesTotal,int* cascadasActuales, int* puntuacion) {
 
     int fichasAntes = *fichasEliminadasTotal;
 
@@ -116,8 +112,7 @@ void procesarEliminacionUsuario(unsigned char* tablero, int filas, int columnas,
     aplicarGravedad(tablero, filas, columnas);
     rellenarVacios(tablero, filas, columnas);
 
-    *cascadasActuales = procesarCascadas(tablero, filas, columnas,
-                                         fichasEliminadasTotal, combinacionesTotal);
+    *cascadasActuales = procesarCascadas(tablero, filas, columnas,fichasEliminadasTotal, combinacionesTotal);
 
     int fichasEnEstaJugada = *fichasEliminadasTotal - fichasAntes;
     *puntuacion += calcularPuntuacion(fichasEnEstaJugada);
